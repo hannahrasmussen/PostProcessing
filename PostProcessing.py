@@ -55,7 +55,7 @@ def create_movie_arrays(ms,mixangle):
     f_tot = data['fe']
     T_tot = data['temp']
     t_tot = data['time']
-    Num_steps = int(len(a_tot)/4)
+    Num_steps = len(a_tot)
     #d_tot = data['decayrate']
     #c_tot = data['collisionrate']
     #n2p = data['n_p_rate']
@@ -93,17 +93,13 @@ def create_movie_arrays(ms,mixangle):
         #    fn = sf.make_collision_fn(ms,mixangle,e_tot[i][:len_e],A_model,n_model,kk)
         
         len_e = len(np.where(e_tot[i] > 0)[0])+1
-        print(i, "Before A,n")
-        A_model, n_model = ca.model_An(a_tot[i], T_tot[i], 1/(0.9 * a_tot[i] * T_tot[i]), e_tot[i][:len_e], f_tot[i][:len_e])
-        print(i, "After A,n, before fn")
+        A_model, n_model = ca.model_An(a_tot[i], T_tot[i], 1/(0.9 * a_tot[i] * T_tot[i]))
         fn = sf.make_collision_fn(ms,mixangle,e_tot[i][:len_e],A_model,n_model)
-        print(i, "After fn, before d,c")
         y_temp = np.zeros(len_e+3)
         y_temp[:len_e] = f_tot[i][:len_e]
         y_temp[-2] = T_tot[i]
         y_temp[-1] = t_tot[i]
         d, c = fn(a_tot[i],y_temp)
-        print(i, "After d,c")
         d_tot[i,:len_e+3] = d
         c_tot[i,:len_e] = c
         Hub[i] = (d[-1] * a_tot[i])**(-1)
