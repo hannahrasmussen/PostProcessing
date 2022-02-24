@@ -132,11 +132,11 @@ def pp(ms, mixangle):
     T_arr = data['temp']
     t_arr = data['time']
     
-    N_eff = N2P.N_eff(T_arr[0],T_arr[-1],a_arr[0],a_arr[-1],f_mat[-1],e_mat[-1],e_mat[-1][1]-e_mat[-1][0]) #This won't work w/ varying boxsize...
+    N_eff = N2P.N_eff(T_arr[0],T_arr[-1],a_arr[0],a_arr[-1],f_mat[-1],e_mat[-1],e_mat[-1][1]-e_mat[-1][0]) 
     dilution_factor = N2P.F(T_arr[0],T_arr[-1],a_arr[0],a_arr[-1]) 
     spb_array = N2P.spb(a_arr,T_arr) 
     n2p, p2n, Hubble = N2P.driver(a_arr, e_mat, f_mat, T_arr, t_arr, ms, mixangle) 
-    std_cosmo_spb = np.zeros(len(T_arr)) + 5.9*10**9 #entropy per baryon in standard cosmology
+    std_cosmo_spb = np.zeros(len(T_arr)) + 5.9*10**9 
     t_YnYp,Y_arr = N2P.YnYp(n2p,p2n,T_arr,t_arr)
     
     print("N effective is " + str(int(100*N_eff)/100))
