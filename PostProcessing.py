@@ -21,13 +21,14 @@ from N2P import N2P_calc as N2P
 
 hbar = 6.58212e-22
 mpi_neutral = 135  
+btop_ratio = 6.11*10**-10
 
 def f_nu(E,Tcm):
     return 1/(np.exp(E/Tcm)+1)
 
-eq_a_arr = np.load('../../eq_arrs/eq_arrs/Luke_a.npy')
-eq_T_arr = np.load('../../eq_arrs/eq_arrs/Luke_T.npy')
-eq_eta_arr = np.load('../../eq_arrs/eq_arrs/Luke_eta.npy')
+eq_a_arr = np.load('../../0-0-FullTestNew/0-0-FullTestNew/Hannah_a.npy')
+eq_T_arr = np.load('../../0-0-FullTestNew/0-0-FullTestNew/Hannah_T.npy')
+eq_eta_arr = np.zeros(len(eq_a_arr)) #np.load('../../0-0-FullTestNew/0-0-FullTestNew/Luke_eta.npy')
 eq_e_arr = np.linspace(0,200,201)
 cs_eta = cs(np.flip(eq_T_arr),np.flip(eq_eta_arr))
 cs_Tcm = cs(np.flip(eq_T_arr),np.flip(1/eq_a_arr))
@@ -134,7 +135,8 @@ def pp(ms, mixangle):
     
     N_eff = N2P.N_eff(T_arr[0],T_arr[-1],a_arr[0],a_arr[-1],f_mat[-1],e_mat[-1],e_mat[-1][1]-e_mat[-1][0]) 
     dilution_factor = N2P.F(T_arr[0],T_arr[-1],a_arr[0],a_arr[-1]) 
-    spb_array = N2P.spb(a_arr,T_arr) 
+    nbaryon_arr, spb_array = N2P.spb(a_arr,T_arr)
+    nphoton_arr = (2*1.20206/np.pi**2)*T_arr**3
     n2p, p2n, Hubble = N2P.driver(a_arr, e_mat, f_mat, T_arr, t_arr, ms, mixangle) 
     std_cosmo_spb = np.zeros(len(T_arr)) + 5.9*10**9 
     t_YnYp,Y_arr = N2P.YnYp(n2p,p2n,T_arr,t_arr)
@@ -178,6 +180,18 @@ def pp(ms, mixangle):
     plt.tick_params(axis="x", labelsize=16)
     plt.tick_params(axis="y", labelsize=16)
     plt.show()
+    
+    plt.figure(figsize=(8,8))
+    plt.semilogx(T_arr,nbaryon_arr/nphoton_arr,color='purple',label="Our model")
+    plt.semilogx(T_arr,btop_ratio*np.ones(len(T_arr)),color='gold',linestyle="--", label="Std. Cosmology")
+    plt.xlabel("Plasma Temperature (MeV)",fontsize=16)
+    plt.ylabel("Baryon-to-photon ratio",fontsize=16)
+    plt.xlim(15,0.01)
+    plt.legend(loc="upper right", fontsize=14)
+    plt.tick_params(axis="x", labelsize=16)
+    plt.tick_params(axis="y", labelsize=16)
+    plt.show()
+    print("The initial baryon-to-photon ratio is ",nbaryon_arr[0]/nphoton_arr[0])
 
     plt.figure(figsize=(8,6))
     plt.semilogx(t_YnYp,Y_arr[0],label = '$Y_n$',color='darkturquoise')
@@ -189,6 +203,8 @@ def pp(ms, mixangle):
     plt.tick_params(axis="y", labelsize=14)
     plt.legend(loc="lower right", fontsize=14)
     plt.show()
+    
+    return nbaryon_arr, nphoton_arr
 
 def inspect_graphs(ms,mixangle):
     folder = "../../{}-{:.4}-FullTestNew/{}-{:.4}-FullTestNew".format(ms,mixangle,ms,mixangle)
@@ -301,6 +317,8 @@ def inspect_graphs(ms,mixangle):
     plt.tick_params(axis="x", labelsize=16)
     plt.tick_params(axis="y", labelsize=16)
     plt.show()
+    
+    return nue_n, pos_n, n, p_elec, anue_p, anue_elec_p
 
 
 # In[5]:
